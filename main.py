@@ -465,7 +465,7 @@ def socialPost(id):
     ax.imshow(team_2_logo, extent=[1200, 1400, 500, 700])
 
     # Save and show the image
-    plt.savefig(f"/{args.sport}/post.png", dpi=600, bbox_inches="tight")
+    plt.savefig(f"{args.sport}/post.png", dpi=600, bbox_inches="tight")
 
 
     with open(f'{args.sport}/games.json', 'w') as file:

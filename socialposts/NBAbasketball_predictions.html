@@ -1,0 +1,51 @@
+
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+        html{background-color: #232931}
+        *{font-family: "Ubuntu", sans-serif;}
+        .predictions{
+        width: 800px;
+        height: 900px;
+
+        display:flex;
+        flex-direction:column;
+        margin:auto;
+
+        justify-content: space-evenly;
+
+        
+        }
+        h3{
+        text-align:center;
+        }
+        .game-row{
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            line-height: 1;
+            white-space:nowrap;
+            font-weight: 400;
+
+            
+            font-size: min(
+                6vh,   /* height-based limit */
+                3.5vw  /* width-based limit */
+            );
+        }
+        </style>
+
+        <h1 style="text-align:center; font-size: 5vh; margin-top: 15px; margin-bottom: 5px; color:#e7bba7">NBA Predictions</h1>
+        <h3 style="text-align:center; font-size: 3vh; color:white; margin: 5px;">2026-01-19</h3>
+        <h4 style="text-align:center; font-size: 2vh; margin: 15px; font-weight: 400; color: white;">Accuracy: 63.7%</h4>
+        <div class="predictions">
+
+        <h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Hawks</span> @ <span id='awayteam' style='color:#e7a7da'>Bucks</span> | <span style='color:#e7b0a7'>52.8% Hawks</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Cavaliers</span> @ <span id='awayteam' style='color:#e7a7da'>Thunder</span> | <span style='color:#e7a7da'>67.2% Thunder</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Wizards</span> @ <span id='awayteam' style='color:#e7a7da'>Clippers</span> | <span style='color:#e7a7da'>68.1% Clippers</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Knicks</span> @ <span id='awayteam' style='color:#e7a7da'>Mavericks</span> | <span style='color:#e7b0a7'>60.3% Knicks</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Spurs</span> @ <span id='awayteam' style='color:#e7a7da'>Jazz</span> | <span style='color:#e7b0a7'>73.1% Spurs</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>76ers</span> @ <span id='awayteam' style='color:#e7a7da'>Pacers</span> | <span style='color:#e7b0a7'>68.2% 76ers</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Nets</span> @ <span id='awayteam' style='color:#e7a7da'>Suns</span> | <span style='color:#e7a7da'>67.4% Suns</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Pistons</span> @ <span id='awayteam' style='color:#e7a7da'>Celtics</span> | <span style='color:#e7b0a7'>53.1% Pistons</span></h3>
+<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:#e7b0a7'>Warriors</span> @ <span id='awayteam' style='color:#e7a7da'>Heat</span> | <span style='color:#e7b0a7'>55.3% Warriors</span></h3>
+</div><h4 style='text-align:center; width: 100%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.pages.dev/basketball</h4>
