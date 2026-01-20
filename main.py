@@ -397,8 +397,8 @@ def socialPost(id):
     
     font_path = 'assets/Ubuntu-Bold.ttf' 
     font_prop = font_manager.FontProperties(fname=font_path)
-    os.system(f"wget -O team_1.png {team_1['logo']}")
-    os.system(f"wget -O team_2.png {team_2['logo']}")
+    os.system(f"wget -O {args.sport}/team_1.png {team_1['logo']}")
+    os.system(f"wget -O {args.sport}/team_2.png {team_2['logo']}")
 
 
     # os.system(f"inkscape assets/{team_1['team_name']}.svg --export-type=png --export-filename=team_1.png --export-dpi=600")
