@@ -24,19 +24,19 @@ league = ''
 
 if args.sport == "NBAbasketball":
     sport = "basketball"
-    league = "NBA"
+    league = "nba"
     k_mult = 4
     load_dotenv('NBAbasketball.env')
 elif args.sport == "NHLhockey":
     sport = "hockey"
-    league = "NHL"
+    league = "nhl"
     k_mult = 24
 
     load_dotenv('NHLhockey.env')
 
 elif args.sport == "MLBbaseball":
     sport = "baseball"
-    league = "MLB"
+    league = "mlb"
     k_mult = 16
 
     load_dotenv('MLBbaseball.env')
@@ -180,7 +180,7 @@ def calc_elo():
 
         with open(f'{args.sport}/teams.json', 'w') as file:
             json.dump(teams, file)
-            
+
     calc_order()
     
     for game in games:
@@ -634,7 +634,10 @@ def add_to_db_rankings():
     with open(f'{args.sport}/order.json') as file:
         currentOrder = json.load(file)
 
+    with open(f'{args.sport}/games.json') as file:
+        gamesFile = json.load(file)
 
+    currentOrder['games'] = gamesFile
 
 
     RANKINGS_API_TOKEN = os.getenv('RANKINGS_API_TOKEN')
