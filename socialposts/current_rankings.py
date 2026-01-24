@@ -83,7 +83,7 @@ team_colours = {
 
   "nhl": {
     "Anaheim Ducks": { "colour": "#f5f5ab" },
-    "Utah Mammoth": { "colour": "#fcbbb6" },
+    "Arizona Coyotes": { "colour": "#fcbbb6" },
     "Boston Bruins": { "colour": "#f5f5ab" },
     "Buffalo Sabres": { "colour": "#b6d8fc" },
     "Calgary Flames": { "colour": "#fcb6f1" },
@@ -141,30 +141,20 @@ if args.sport == "NBAbasketball":
     away_color = "#e7a7da"
     K = 64
 
-
+def get_human_date():
+    dt = datetime.datetime.now()
+    day = dt.day
+    
+    if 11 <= day <= 13:
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+    
+    return dt.strftime(f"%B {day}{suffix}")
 
 def buildGraphic(api_data, previous_teams):
-    today = datetime.datetime.now()
-    last_7_days = [(today - datetime.timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
-    teams = list(api_data.keys())
-
-    previous_ranking = list(previous_teams.keys())
-
-    print(teams, 'p')
-
-    def getChange(team):
-        now_pos = teams.index(team)
-        last_pos = previous_ranking.index(team)
-
-        if now_pos < last_pos:
-            # climbed the ranking
-            return f"<span style='color:#6eff92'>▲ {abs(now_pos-last_pos)}</span>"
-        elif now_pos > last_pos:
-            # went down
-            return f"<span style='color:#ff6e6e'>▼ {abs(now_pos-last_pos)}</span>"
-        elif now_pos == last_pos:
-            # stayed
-            return f"<span style='color:#bababa'>=</span>"
+    today = get_human_date()
+    teams = list(api_data['all'].keys())
 
 
 
@@ -202,19 +192,19 @@ def buildGraphic(api_data, previous_teams):
         }}
         </style>
 
-        <h1 style="text-align:center; font-size: 5vh; margin-top: 15px; margin-bottom: 5px; color:{sport_color}">{league.upper()} PowerRankings</h1>
-        <h3 style="text-align:center; font-size: 3vh; color:white; margin: 5px;">Week of {last_7_days[-1]}</h3>
+        <h1 style="text-align:center; font-size: 5vh; margin-top: 15px; margin-bottom: 5px; color:{sport_color}">{league.upper()} Rankings</h1>
+        <h3 style="text-align:center; font-size: 3vh; color:white; margin: 5px;">As of {today}</h3>
         <div class="predictions">
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[0]]['colour']}">#1: {teams[0]}</span>{getChange(teams[0])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[1]]['colour']}">#2: {teams[1]}</span>{getChange(teams[1])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[2]]['colour']}">#3: {teams[2]}</span>{getChange(teams[2])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[3]]['colour']}">#4: {teams[3]}</span>{getChange(teams[3])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[4]]['colour']}">#5: {teams[4]}</span>{getChange(teams[4])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[5]]['colour']}">#6: {teams[5]}</span>{getChange(teams[5])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[6]]['colour']}">#7: {teams[6]}</span>{getChange(teams[6])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[7]]['colour']}">#8: {teams[7]}</span>{getChange(teams[7])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[8]]['colour']}">#9: {teams[8]}</span>{getChange(teams[8])}</h3>
-        <h3 class="game-row"><span style="color:{team_colours[league][teams[9]]['colour']}">#10: {teams[9]}</span>{getChange(teams[9])}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[0]]['colour']}">#1: {teams[0]}</span>{api_data['all'][teams[0]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[1]]['colour']}">#2: {teams[1]}</span>{api_data['all'][teams[1]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[2]]['colour']}">#3: {teams[2]}</span>{api_data['all'][teams[2]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[3]]['colour']}">#4: {teams[3]}</span>{api_data['all'][teams[3]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[4]]['colour']}">#5: {teams[4]}</span>{api_data['all'][teams[4]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[5]]['colour']}">#6: {teams[5]}</span>{api_data['all'][teams[5]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[6]]['colour']}">#7: {teams[6]}</span>{api_data['all'][teams[6]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[7]]['colour']}">#8: {teams[7]}</span>{api_data['all'][teams[7]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[8]]['colour']}">#9: {teams[8]}</span>{api_data['all'][teams[8]]['elo']}</h3>
+        <h3 class="game-row"><span style="color:{team_colours[league][teams[9]]['colour']}">#10: {teams[9]}</span>{api_data['all'][teams[9]]['elo']}</h3>
 
         '''
         
@@ -224,16 +214,16 @@ def buildGraphic(api_data, previous_teams):
     html_content += "</div>"
     html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.pages.dev/{sport}</h4>"
 
-    with open(f'socialposts/{args.sport}_powerrankings.html', 'w') as file:
+    with open(f'socialposts/{args.sport}_rankings.html', 'w') as file:
         file.write(html_content)
 
-    abs_path = os.path.abspath(f"socialposts/{args.sport}_powerrankings.html")
+    abs_path = os.path.abspath(f"socialposts/{args.sport}_rankings.html")
     file_url = f"file://{abs_path}"
     print(file_url)
     command = [
             "chromium", 
             "--headless=new",
-            f"--screenshot={f'socialposts/{args.sport}_powerrankings.png'}",
+            f"--screenshot={f'socialposts/{args.sport}_rankings.png'}",
             "--virtual-time-budget=5000",
             '--force-device-scale-factor=2',
             f'--run-all-compositor-stages-before-draw ',
@@ -244,105 +234,11 @@ def buildGraphic(api_data, previous_teams):
     subprocess.run(command, check=True)
 
 
-
-def getLast7Days(data, sport):
-
-    today = datetime.datetime.now()
-    last_7_days = [(today - datetime.timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
-    print(last_7_days)
-    games = []
-    for i in data['games'].values():
-        if i['date'] in last_7_days:
-            games.append(i)
-
-        
-    teams = data['all']
-    for team in teams.values():
-        team['elo'] = 1000
-        team['games'] = []
-
-    for game in games:
-        team1 = game['team_1']
-        team2 = game['team_2']
-        
-        team1elo = teams[game['team_1']['team_name']]['elo']
-        team2elo = teams[game['team_2']['team_name']]['elo']
-
-        team1winprob = 1/(1+10**((team2elo-team1elo)/400))
-        team2winprob = 1/(1+10**((team1elo-team2elo)/400))
-
-        team1W = 0
-        team2W = 0
-
-        if team1['winner'] == False:
-            team1W = 0
-            team2W =1
-        else:
-            team1W = 1
-            team2W = 0
-
-        teams[team1['team_name']]['elo'] = team1elo + (K *(team1W-team1winprob))
-        teams[team2['team_name']]['elo'] = team2elo + (K *(team2W-team2winprob))
-
-    teams = dict(sorted(teams.items(), key=lambda item: item[1]['elo'], reverse=True))
-
-
-    today = datetime.datetime.now()
-    last_7_days = [(today - datetime.timedelta(days=i)).strftime('%Y-%m-%d') for i in range(6,14)]
-    print(last_7_days)
-    games = []
-    for i in data['games'].values():
-        if i['date'] in last_7_days:
-            games.append(i)
-
-        
-    previous_teams = data['all']
-    for team in previous_teams.values():
-        team['elo'] = 1000
-        team['games'] = []
-
-    for game in games:
-        team1 = game['team_1']
-        team2 = game['team_2']
-        
-        team1elo = previous_teams[game['team_1']['team_name']]['elo']
-        team2elo = previous_teams[game['team_2']['team_name']]['elo']
-
-        team1winprob = 1/(1+10**((team2elo-team1elo)/400))
-        team2winprob = 1/(1+10**((team1elo-team2elo)/400))
-
-        team1W = 0
-        team2W = 0
-
-        if team1['winner'] == False:
-            team1W = 0
-            team2W =1
-        else:
-            team1W = 1
-            team2W = 0
-
-        previous_teams[team1['team_name']]['elo'] = team1elo + (K *(team1W-team1winprob))
-        previous_teams[team2['team_name']]['elo'] = team2elo + (K *(team2W-team2winprob))
-
-    previous_teams = dict(sorted(previous_teams.items(), key=lambda item: item[1]['elo'], reverse=True))
-    print(previous_teams.keys())
-    
-    
-    
-
-
-
-
-    buildGraphic(teams, previous_teams)
-    return
-
-
-
 info = {}
 with open(f"{args.sport}/order.json", "r") as file:
     info = json.load(file)
 
-getLast7Days(info, sport)
+buildGraphic(info, sport)
 
 
 
@@ -390,7 +286,7 @@ def create_post(sport):
 
     accessJwt = session["accessJwt"]
 
-    with open(f'socialposts/{sport}_powerrankings.png', "rb") as f:
+    with open(f'socialposts/{sport}_rankings.png', "rb") as f:
         img_bytes = f.read()
 
     if len(img_bytes) > 1000000:
@@ -415,15 +311,15 @@ def create_post(sport):
     with open(f'{sport}/post.json') as postfile:
         postinfo = json.load(postfile)
 
-    posttext = f"{config[sport]['league']} PowerRankings presented by Quantus{sport.capitalize()}\n\n QuantusSports.pages.dev/{sport}/powerrankings"
+    posttext = f"{config[sport]['league']} Rankings powered by Quantus{sport.capitalize()}\n\n QuantusSports.pages.dev/{sport}/ratings"
 
     facets = [
         {
             "index": {
-                "byteStart": posttext.find("https://QuantusSports.pages.dev/{sport}/powerrankings"),
-                "byteEnd": posttext.find("https://QuantusSports.pages.dev/{sport}/powerrankings") + len("https://QuantusSports.pages.dev/{sport}/powerrankings")
+                "byteStart": posttext.find("https://QuantusSports.pages.dev/{sport}/ratings"),
+                "byteEnd": posttext.find("https://QuantusSports.pages.dev/{sport}/ratings") + len("https://QuantusSports.pages.dev/{sport}/ratings")
             },
-            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/{sport}/powerrankings"}]
+            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/{sport}/ratings"}]
         },
         {
             "index": {

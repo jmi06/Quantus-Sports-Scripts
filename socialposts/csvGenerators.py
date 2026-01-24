@@ -100,10 +100,10 @@ def byGame(sport):
     return
 
 
+
 def byDate(sport):
 
-    print('creating bydate')
-
+    print('runnning bydate')
     date_range = pd.date_range(start=START_DATE, end=END_DATE, freq='D')
     formatted_dates = date_range.strftime("%Y-%m-%d")
     df = pd.DataFrame(index=sorted_teams, columns=date_range)
@@ -141,6 +141,7 @@ def byDate(sport):
     return
 
 
+byDate('NBAbasketball')
 
 
 
