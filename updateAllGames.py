@@ -85,17 +85,17 @@ def fetch_games(date):
             teams[game['competitions'][0]['competitors'][0]['team']['displayName']]['record'] = game['competitions'][0]['competitors'][0]['records'][0]['summary']
             teams[game['competitions'][0]['competitors'][1]['team']['displayName']]['record'] = game['competitions'][0]['competitors'][1]['records'][0]['summary']
         except:
-            print('no issue')   
+            print('no issue')
 
         if game['season']['slug'] == 'regular-season' and game_identifier not in games and game['status']['type']['name'] == 'STATUS_FINAL' and 'records' in game['competitions'][0]['competitors'][0]:
-            
-            games[game_identifier] = {'socialpost': True, 'points_diff': abs(   float(game['competitions'][0]['competitors'][0]['score']) - float(game['competitions'][0]['competitors'][1]['score'])   ), 'date': game['date'].split("T")[0] } 
+
+            games[game_identifier] = {'socialpost': True, 'points_diff': abs(   float(game['competitions'][0]['competitors'][0]['score']) - float(game['competitions'][0]['competitors'][1]['score'])   ), 'date': game['date'].split("T")[0] }
 
             games[game_identifier]['team_1'] = {'team_name': game['competitions'][0]['competitors'][0]['team']['displayName'],
                                            'winner': game['competitions'][0]['competitors'][0]['winner'],
                                            'score': game['competitions'][0]['competitors'][0]['score'],
                                            'logo': game['competitions'][0]['competitors'][0]['team']['logo'],
-                                           
+
 
                                            'record': game['competitions'][0]['competitors'][0]['records'][0]['summary']}
             games[game_identifier]['team_2'] = {'team_name': game['competitions'][0]['competitors'][1]['team']['displayName'],
@@ -104,7 +104,7 @@ def fetch_games(date):
                                            'logo': game['competitions'][0]['competitors'][1]['team']['logo'],
 
 
-                                           
+
 
                                            'record': game['competitions'][0]['competitors'][1]['records'][0]['summary']}
 
@@ -119,6 +119,3 @@ for i in dates:
     print(i)
     fetch_games(i)
     time.sleep(1)
-
-
-

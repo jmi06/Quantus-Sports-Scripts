@@ -42,7 +42,7 @@ def create_post(sport):
     BLUESKY_HANDLE = os.getenv('BLUESKY_USERNAME')
     BLUESKY_PASSWORD = os.getenv('BLUESKY_PASSWORD')
 
-        
+
     mlb_team_hashtags = {
         "Anaheim Ducks": "#FlyTogether",
         "Arizona Coyotes": "#Yotes",
@@ -162,7 +162,7 @@ def create_post(sport):
 
 
 
-    
+
 
     post["embed"] = {
         "$type": "app.bsky.embed.images",

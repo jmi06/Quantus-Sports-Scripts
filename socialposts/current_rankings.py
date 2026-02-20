@@ -14,6 +14,13 @@ parser.add_argument("--sport")
 args = parser.parse_args()
 print(args.sport)
 
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+os.chdir(current_dir)
+
+
+
 team_colours = {
   "nba": {
     "Atlanta Hawks": { "colour": "#fcbbb6" },
@@ -83,7 +90,7 @@ team_colours = {
 
   "nhl": {
     "Anaheim Ducks": { "colour": "#f5f5ab" },
-    "Arizona Coyotes": { "colour": "#fcbbb6" },
+    "Utah Mammoth": { "colour": "#fcbbb6" },
     "Boston Bruins": { "colour": "#f5f5ab" },
     "Buffalo Sabres": { "colour": "#b6d8fc" },
     "Calgary Flames": { "colour": "#fcb6f1" },
@@ -144,12 +151,12 @@ if args.sport == "NBAbasketball":
 def get_human_date():
     dt = datetime.datetime.now()
     day = dt.day
-    
+
     if 11 <= day <= 13:
         suffix = 'th'
     else:
         suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
-    
+
     return dt.strftime(f"%B {day}{suffix}")
 
 def buildGraphic(api_data, previous_teams):
@@ -176,9 +183,9 @@ def buildGraphic(api_data, previous_teams):
             margin: auto;
             justify-content: space-evenly;
 
-        
+
         }}
-        
+
         .game-row{{
             align-items: center;
             margin: 30px auto 10px auto;
@@ -207,23 +214,23 @@ def buildGraphic(api_data, previous_teams):
         <h3 class="game-row"><span style="color:{team_colours[league][teams[9]]['colour']}">#10: {teams[9]}</span>{api_data['all'][teams[9]]['elo']}</h3>
 
         '''
-        
+
 
 
 
     html_content += "</div>"
     html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.pages.dev/{sport}</h4>"
 
-    with open(f'socialposts/{args.sport}_rankings.html', 'w') as file:
+    with open(f'{args.sport}_rankings.html', 'w') as file:
         file.write(html_content)
 
-    abs_path = os.path.abspath(f"socialposts/{args.sport}_rankings.html")
+    abs_path = os.path.abspath(f"{args.sport}_rankings.html")
     file_url = f"file://{abs_path}"
     print(file_url)
     command = [
-            "chromium", 
+            "chromium",
             "--headless=new",
-            f"--screenshot={f'socialposts/{args.sport}_rankings.png'}",
+            f"--screenshot={f'{args.sport}_rankings.png'}",
             "--virtual-time-budget=5000",
             '--force-device-scale-factor=2',
             f'--run-all-compositor-stages-before-draw ',
@@ -235,7 +242,7 @@ def buildGraphic(api_data, previous_teams):
 
 
 info = {}
-with open(f"{args.sport}/order.json", "r") as file:
+with open(f"../{args.sport}/order.json", "r") as file:
     info = json.load(file)
 
 buildGraphic(info, sport)
@@ -264,15 +271,15 @@ def create_post(sport):
         }
     }
 
-    load_dotenv(f"{sport}.env")
+    load_dotenv(f"../{args.sport}.env")
 
     BLUESKY_HANDLE = os.getenv('BLUESKY_USERNAME')
     BLUESKY_PASSWORD = os.getenv('BLUESKY_PASSWORD')
 
     # Using a trailing "Z" is preferred over the "+00:00" format
-    now = datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
 
-    postNow = datetime.now()
+    postNow = datetime.datetime.now()
 
     formatted_time = postNow.strftime("%I:%M %p")
 
@@ -284,9 +291,12 @@ def create_post(sport):
 
     session = resp.json()
 
+    print(BLUESKY_HANDLE)
+
+
     accessJwt = session["accessJwt"]
 
-    with open(f'socialposts/{sport}_rankings.png', "rb") as f:
+    with open(f'{args.sport}_rankings.png', "rb") as f:
         img_bytes = f.read()
 
     if len(img_bytes) > 1000000:
@@ -308,26 +318,26 @@ def create_post(sport):
     blob = resp.json()["blob"]
 
     postinfo = {}
-    with open(f'{sport}/post.json') as postfile:
-        postinfo = json.load(postfile)
+#    with open(f'..{args.sport}/post.json') as postfile:
+ #       postinfo = json.load(postfile)
 
-    posttext = f"{config[sport]['league']} Rankings powered by Quantus{sport.capitalize()}\n\n QuantusSports.pages.dev/{sport}/ratings"
+    posttext = f"{league.upper()} Rankings powered by Quantus{sport.capitalize()}\n\nQuantusSports.pages.dev/{sport}/ratings"
 
     facets = [
         {
             "index": {
-                "byteStart": posttext.find("https://QuantusSports.pages.dev/{sport}/ratings"),
-                "byteEnd": posttext.find("https://QuantusSports.pages.dev/{sport}/ratings") + len("https://QuantusSports.pages.dev/{sport}/ratings")
+                "byteStart": posttext.find(f"QuantusSports.pages.dev/{sport}/ratings"),
+                "byteEnd": posttext.find(f"QuantusSports.pages.dev/{sport}/ratings") + len(f"QuantusSports.pages.dev/{sport}/ratings")
             },
             "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/{sport}/ratings"}]
         },
-        {
-            "index": {
-                "byteStart": posttext.find(config[sport]['tag']),
-                "byteEnd": posttext.find(config[sport]['tag']) + len(config[sport]['tag'])
-            },
-            "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": config[sport]['tag'][1:]}]
-        }
+ #       {
+#            "index": {
+  #              "byteStart": posttext.find(config[args.sport]['tag']),
+   #             "byteEnd": posttext.find(config[args.sport]['tag']) + len(config[args.sport]['tag'])
+   #         },
+   #         "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": config[args.sport]['tag'][1:]}]
+   #     }
     ]
 
     post = {
@@ -340,14 +350,14 @@ def create_post(sport):
 
 
 
-    
+
 
     post["embed"] = {
         "$type": "app.bsky.embed.images",
         "images": [{
             "alt": "",
             "image": blob,
-            "aspectRatio": {"width": 313, "height": 236}
+            "aspectRatio": {"width": 800, "height": 900}
         }],
     }
 
@@ -361,11 +371,17 @@ def create_post(sport):
                 "collection": "app.bsky.feed.post",
                 "record": post,
             },
+
+
         )
+        resp.raise_for_status()
+
     except Exception as e:
         print('bluesky is beefing',e)
         attempts+=1
         if attempts < 3:
-            create_post()
+            create_post(sport)
     print('posted to bluesky')
+    print(resp)
 
+create_post(sport)
