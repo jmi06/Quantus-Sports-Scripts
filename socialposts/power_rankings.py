@@ -20,115 +20,113 @@ os.chdir(current_dir)
 
 
 
-
 team_colours = {
   "nba": {
-    "Atlanta Hawks": { "colour": "#fcbbb6" },
-    "Boston Celtics": { "colour": "#b6fcc3" },
-    "Brooklyn Nets": { "colour": "#b6d8fc" },
-    "Charlotte Hornets": { "colour": "#c8b6fc" },
-    "Chicago Bulls": { "colour": "#fcb6f1" },
-    "Cleveland Cavaliers": { "colour": "#fcbbb6" },
-    "Dallas Mavericks": { "colour": "#b6ddfc" },
-    "Denver Nuggets": { "colour": "#f5f5ab" },
-    "Detroit Pistons": { "colour": "#b6d8fc" },
-    "Golden State Warriors": { "colour": "#f5f5ab" },
-    "Houston Rockets": { "colour": "#fcb6f1" },
-    "Indiana Pacers": { "colour": "#f5f5ab" },
-    "LA Clippers": { "colour": "#b6ddfc" },
-    "Los Angeles Lakers": { "colour": "#c8b6fc" },
-    "Memphis Grizzlies": { "colour": "#b6d8fc" },
-    "Miami Heat": { "colour": "#fcb6f1" },
-    "Milwaukee Bucks": { "colour": "#b6fcc3" },
-    "Minnesota Timberwolves": { "colour": "#b6ddfc" },
-    "New Orleans Pelicans": { "colour": "#b6fcc3" },
-    "New York Knicks": { "colour": "#fcbbb6" },
-    "Oklahoma City Thunder": { "colour": "#b6d8fc" },
-    "Orlando Magic": { "colour": "#b6d8fc" },
-    "Philadelphia 76ers": { "colour": "#fcb6f1" },
-    "Phoenix Suns": { "colour": "#fcbbb6" },
-    "Portland Trail Blazers": { "colour": "#fcb6f1" },
-    "Sacramento Kings": { "colour": "#c8b6fc" },
-    "San Antonio Spurs": { "colour": "#b6fcc3" },
-    "Toronto Raptors": { "colour": "#c8b6fc" },
-    "Utah Jazz": { "colour": "#c8b6fc" },
-    "Washington Wizards": { "colour": "#b6ddfc" }
+    "Atlanta Hawks": { "colour": "#FF6161" },
+    "Boston Celtics": { "colour": "#a7e7b1" },
+    "Brooklyn Nets": { "colour": "#C9C9C9" },
+    "Charlotte Hornets": { "colour": "#8ea2fd" },
+    "Chicago Bulls": { "colour": "#FF6161" },
+    "Cleveland Cavaliers": { "colour": "#8ea2fd" },
+    "Dallas Mavericks": { "colour": "#8ea2fd" },
+    "Denver Nuggets": { "colour": "#8EC7FD" },
+    "Detroit Pistons": { "colour": "#FF6161" },
+    "Golden State Warriors": { "colour": "#FFF88F" },
+    "Houston Rockets": { "colour": "#FF6161" },
+    "Indiana Pacers": { "colour": "#8ea2fd" },
+    "LA Clippers": { "colour": "#FF6161" },
+    "Los Angeles Lakers": { "colour": "#bd8fff" },
+    "Memphis Grizzlies": { "colour": "#8ea2fd" },
+    "Miami Heat": { "colour": "#FF6161" },
+    "Milwaukee Bucks": { "colour": "#a7e7b1" },
+    "Minnesota Timberwolves": { "colour": "#8ea2fd" },
+    "New Orleans Pelicans": { "colour": "#8ea2fd" },
+    "New York Knicks": { "colour": "#ffb28f" },
+    "Oklahoma City Thunder": { "colour": "#8ea2fd" },
+    "Orlando Magic": { "colour": "#8ea2fd" },
+    "Philadelphia 76ers": { "colour": "#FF6161" },
+    "Phoenix Suns": { "colour": "#bd8fff" },
+    "Portland Trail Blazers": { "colour": "#FF6161" },
+    "Sacramento Kings": { "colour": "#bd8fff" },
+    "San Antonio Spurs": { "colour": "#C9C9C9" },
+    "Toronto Raptors": { "colour": "#FF6161" },
+    "Utah Jazz": { "colour": "#8ea2fd" },
+    "Washington Wizards": { "colour": "#8ea2fd" }
   },
 
   "mlb": {
-    "Arizona Diamondbacks": { "colour": "#fcbbb6" },
-    "Atlanta Braves": { "colour": "#b6d8fc" },
-    "Baltimore Orioles": { "colour": "#f5f5ab" },
-    "Boston Red Sox": { "colour": "#fcb6f1" },
-    "Chicago Cubs": { "colour": "#b6d8fc" },
-    "Chicago White Sox": { "colour": "#b6fcc3" },
-    "Cincinnati Reds": { "colour": "#fcb6f1" },
-    "Cleveland Guardians": { "colour": "#fcbbb6" },
-    "Colorado Rockies": { "colour": "#c8b6fc" },
-    "Detroit Tigers": { "colour": "#b6d8fc" },
-    "Houston Astros": { "colour": "#f5f5ab" },
-    "Kansas City Royals": { "colour": "#b6d8fc" },
-    "Los Angeles Angels": { "colour": "#fcb6f1" },
-    "Los Angeles Dodgers": { "colour": "#b6d8fc" },
-    "Miami Marlins": { "colour": "#b6ddfc" },
-    "Milwaukee Brewers": { "colour": "#f5f5ab" },
-    "Minnesota Twins": { "colour": "#b6d8fc" },
-    "New York Mets": { "colour": "#fcbbb6" },
-    "New York Yankees": { "colour": "#b6ddfc" },
-    "Oakland Athletics": { "colour": "#b6fcc3" },
-    "Philadelphia Phillies": { "colour": "#fcb6f1" },
-    "Pittsburgh Pirates": { "colour": "#f5f5ab" },
-    "San Diego Padres": { "colour": "#f5f5ab" },
-    "San Francisco Giants": { "colour": "#fcbbb6" },
-    "Seattle Mariners": { "colour": "#b6fcc3" },
-    "St. Louis Cardinals": { "colour": "#fcb6f1" },
-    "Tampa Bay Rays": { "colour": "#b6d8fc" },
-    "Texas Rangers": { "colour": "#b6ddfc" },
-    "Toronto Blue Jays": { "colour": "#b6d8fc" },
-    "Washington Nationals": { "colour": "#fcbbb6" }
+    "Arizona Diamondbacks": { "colour": "#FF6161" },
+    "Atlanta Braves": { "colour": "#8ea2fd" },
+    "Baltimore Orioles": { "colour": "#ffb28f" },
+    "Boston Red Sox": { "colour": "#FF6161" },
+    "Chicago Cubs": { "colour": "#8EC7FD" },
+    "Chicago White Sox": { "colour": "#C9C9C9" },
+    "Cincinnati Reds": { "colour": "#FF6161" },
+    "Cleveland Guardians": { "colour": "#8ea2fd" },
+    "Colorado Rockies": { "colour": "#bd8fff" },
+    "Detroit Tigers": { "colour": "#8ea2fd" },
+    "Houston Astros": { "colour": "#8ea2fd" },
+    "Kansas City Royals": { "colour": "#8EC7FD" },
+    "Los Angeles Angels": { "colour": "#FF6161" },
+    "Los Angeles Dodgers": { "colour": "#8ea2fd" },
+    "Miami Marlins": { "colour": "#8ea2fd" },
+    "Milwaukee Brewers": { "colour": "#8ea2fd" },
+    "Minnesota Twins": { "colour": "#8ea2fd" },
+    "New York Mets": { "colour": "#8ea2fd" },
+    "New York Yankees": { "colour": "#8ea2fd" },
+    "Oakland Athletics": { "colour": "#a7e7b1" },
+    "Philadelphia Phillies": { "colour": "#FF6161" },
+    "Pittsburgh Pirates": { "colour": "#C9C9C9" },
+    "San Diego Padres": { "colour": "#FFF88F" },
+    "San Francisco Giants": { "colour": "#C9C9C9" },
+    "Seattle Mariners": { "colour": "#8ea2fd" },
+    "St. Louis Cardinals": { "colour": "#FF6161" },
+    "Tampa Bay Rays": { "colour": "#8ea2fd" },
+    "Texas Rangers": { "colour": "#8ea2fd" },
+    "Toronto Blue Jays": { "colour": "#8ea2fd" },
+    "Washington Nationals": { "colour": "#FF6161" }
   },
 
   "nhl": {
-    "Anaheim Ducks": { "colour": "#f5f5ab" },
-    "Utah Mammoth": { "colour": "#fcbbb6" },
-    "Boston Bruins": { "colour": "#f5f5ab" },
-    "Buffalo Sabres": { "colour": "#b6d8fc" },
-    "Calgary Flames": { "colour": "#fcb6f1" },
-    "Carolina Hurricanes": { "colour": "#fcb6f1" },
-    "Chicago Blackhawks": { "colour": "#fcbbb6" },
-    "Colorado Avalanche": { "colour": "#b6d8fc" },
-    "Columbus Blue Jackets": { "colour": "#b6d8fc" },
-    "Dallas Stars": { "colour": "#b6fcc3" },
-    "Detroit Red Wings": { "colour": "#fcb6f1" },
-    "Edmonton Oilers": { "colour": "#f5f5ab" },
-    "Florida Panthers": { "colour": "#fcbbb6" },
-    "Los Angeles Kings": { "colour": "#b6ddfc" },
-    "Minnesota Wild": { "colour": "#b6fcc3" },
-    "Montreal Canadiens": { "colour": "#fcb6f1" },
-    "Nashville Predators": { "colour": "#f5f5ab" },
-    "New Jersey Devils": { "colour": "#fcb6f1" },
-    "New York Islanders": { "colour": "#b6d8fc" },
-    "New York Rangers": { "colour": "#b6d8fc" },
-    "Ottawa Senators": { "colour": "#fcbbb6" },
-    "Philadelphia Flyers": { "colour": "#f5f5ab" },
-    "Pittsburgh Penguins": { "colour": "#f5f5ab" },
-    "San Jose Sharks": { "colour": "#b6ddfc" },
-    "Seattle Kraken": { "colour": "#b6ddfc" },
-    "St. Louis Blues": { "colour": "#b6d8fc" },
-    "Tampa Bay Lightning": { "colour": "#b6d8fc" },
-    "Toronto Maple Leafs": { "colour": "#b6d8fc" },
-    "Vancouver Canucks": { "colour": "#b6fcc3" },
-    "Vegas Golden Knights": { "colour": "#f5f5ab" },
-    "Washington Capitals": { "colour": "#fcb6f1" },
-    "Winnipeg Jets": { "colour": "#b6d8fc" }
+    "Anaheim Ducks": { "colour": "#ffb28f" },
+    "Utah Mammoth": { "colour": "#8ea2fd" },
+    "Boston Bruins": { "colour": "#FFF88F" },
+    "Buffalo Sabres": { "colour": "#8ea2fd" },
+    "Calgary Flames": { "colour": "#FF6161" },
+    "Carolina Hurricanes": { "colour": "#FF6161" },
+    "Chicago Blackhawks": { "colour": "#FF6161" },
+    "Colorado Avalanche": { "colour": "#bd8fff" },
+    "Columbus Blue Jackets": { "colour": "#8ea2fd" },
+    "Dallas Stars": { "colour": "#a7e7b1" },
+    "Detroit Red Wings": { "colour": "#FF6161" },
+    "Edmonton Oilers": { "colour": "#ffb28f" },
+    "Florida Panthers": { "colour": "#FF6161" },
+    "Los Angeles Kings": { "colour": "#C9C9C9" },
+    "Minnesota Wild": { "colour": "#a7e7b1" },
+    "Montreal Canadiens": { "colour": "#FF6161" },
+    "Nashville Predators": { "colour": "#FFF88F" },
+    "New Jersey Devils": { "colour": "#FF6161" },
+    "New York Islanders": { "colour": "#ffb28f" },
+    "New York Rangers": { "colour": "#8ea2fd" },
+    "Ottawa Senators": { "colour": "#FF6161" },
+    "Philadelphia Flyers": { "colour": "#ffb28f" },
+    "Pittsburgh Penguins": { "colour": "#FFF88F" },
+    "San Jose Sharks": { "colour": "#8ea2fd" },
+    "Seattle Kraken": { "colour": "#8ea2fd" },
+    "St. Louis Blues": { "colour": "#8ea2fd" },
+    "Tampa Bay Lightning": { "colour": "#8ea2fd" },
+    "Toronto Maple Leafs": { "colour": "#8ea2fd" },
+    "Vancouver Canucks": { "colour": "#8ea2fd" },
+    "Vegas Golden Knights": { "colour": "#C9C9C9" },
+    "Washington Capitals": { "colour": "#FF6161" },
+    "Winnipeg Jets": { "colour": "#8ea2fd" }
   }
 }
-
 
 if args.sport == "NHLhockey":
     sport = "hockey"
     league = "nhl"
-    sport_color="#c5a7e7"
+    sport_color="rgb(189, 143, 255)"
     home_color = "#e7b0a7"
     away_color = "#e7a7da"
     K = 128
@@ -143,7 +141,7 @@ if args.sport == "MLBbaseball":
 if args.sport == "NBAbasketball":
     sport = "basketball"
     league = "nba"
-    sport_color = "#e7bba7"
+    sport_color = "rgb(255, 178, 143)"
     home_color = "#e7b0a7"
     away_color = "#e7a7da"
     K = 64
@@ -229,7 +227,7 @@ def buildGraphic(api_data, previous_teams):
 
 
     html_content += "</div>"
-    html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.pages.dev/{sport}</h4>"
+    html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.vercel.app/{args.sport}</h4>"
 
     with open(f'{args.sport}_powerrankings.html', 'w') as file:
         file.write(html_content)
@@ -427,15 +425,15 @@ def create_post(sport):
     #with open(f'{sport}/post.json') as postfile:
         #postinfo = json.load(postfile)
 
-    posttext = f"{league.upper()} PowerRankings presented by Quantus{sport.capitalize()}\n\nQuantusSports.pages.dev/{sport}/powerrankings"
+    posttext = f"{league.upper()} PowerRankings presented by Quantus{sport.capitalize()}\n\nQuantusSports.vercel.app/{args.sport}/powerrankings"
 
     facets = [
         {
             "index": {
-                "byteStart": posttext.find(f"QuantusSports.pages.dev/{sport}/powerrankings"),
-                "byteEnd": posttext.find(f"QuantusSports.pages.dev/{sport}/powerrankings") + len(f"QuantusSports.pages.dev/{sport}/powerrankings")
+                "byteStart": posttext.find(f"QuantusSports.vercel.app/{args.sport}/powerrankings"),
+                "byteEnd": posttext.find(f"QuantusSports.vercel.app/{args.sport}/powerrankings") + len(f"QuantusSports.vercel.app/{args.sport}/powerrankings")
             },
-            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/{sport}/powerrankings"}]
+            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.vercel.app/{args.sport}/powerrankings"}]
         },
        # {
        #     "index": {

@@ -103,7 +103,7 @@ def create_post(sport):
 
     session = resp.json()
 
-    accessJwt = session["accessJwt"]
+    # accessJwt = session["accessJwt"]
 
 
 
@@ -132,16 +132,16 @@ def create_post(sport):
     with open(f'{sport}/post.json') as postfile:
         postinfo = json.load(postfile)
 
-    posttext = f"{config[sport]['platform']} Update as of {formatted_time}: \n{postinfo['winning_team']} beat {postinfo['losing_team']} {postinfo['score']} \nSee more at https://QuantusSports.pages.dev/ \n{config[sport]['tag']}"
+    posttext = f"{config[sport]['platform']} Update as of {formatted_time}: \n{postinfo['winning_team']} beat {postinfo['losing_team']} {postinfo['score']} \nSee more at https://QuantusSports.vercel.app/ \n{config[sport]['tag']}"
 
 
     facets = [
         {
             "index": {
-                "byteStart": posttext.find("https://QuantusSports.pages.dev/"),
-                "byteEnd": posttext.find("https://QuantusSports.pages.dev/") + len("https://QuantusSports.pages.dev/")
+                "byteStart": posttext.find("https://QuantusSports.vercel.app/"),
+                "byteEnd": posttext.find("https://QuantusSports.vercel.app/") + len("https://QuantusSports.vercel.app/")
             },
-            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/"}]
+            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.vercel.app/"}]
         },
         {
             "index": {

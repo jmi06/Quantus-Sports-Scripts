@@ -3,3 +3,4 @@ NBAbasketball.env
 NHLhockey.env
 MLBbaseball.env
 venv/
+__pycache__/

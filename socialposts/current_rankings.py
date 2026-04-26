@@ -219,7 +219,7 @@ def buildGraphic(api_data, previous_teams):
 
 
     html_content += "</div>"
-    html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.pages.dev/{sport}</h4>"
+    html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.vercel.app/{args.sport}</h4>"
 
     with open(f'{args.sport}_rankings.html', 'w') as file:
         file.write(html_content)
@@ -321,15 +321,15 @@ def create_post(sport):
 #    with open(f'..{args.sport}/post.json') as postfile:
  #       postinfo = json.load(postfile)
 
-    posttext = f"{league.upper()} Rankings powered by Quantus{sport.capitalize()}\n\nQuantusSports.pages.dev/{sport}/ratings"
+    posttext = f"{league.upper()} Rankings powered by Quantus{sport.capitalize()}\n\nQuantusSports.vercel.app/{args.sport}/ratings"
 
     facets = [
         {
             "index": {
-                "byteStart": posttext.find(f"QuantusSports.pages.dev/{sport}/ratings"),
-                "byteEnd": posttext.find(f"QuantusSports.pages.dev/{sport}/ratings") + len(f"QuantusSports.pages.dev/{sport}/ratings")
+                "byteStart": posttext.find(f"QuantusSports.vercel.app/{args.sport}/ratings"),
+                "byteEnd": posttext.find(f"QuantusSports.vercel.app/{args.sport}/ratings") + len(f"QuantusSports.vercel.app/{args.sport}/ratings")
             },
-            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/{sport}/ratings"}]
+            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.vercel.app/{args.sport}/ratings"}]
         },
  #       {
 #            "index": {

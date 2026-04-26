@@ -26,7 +26,7 @@ os.chdir(current_dir)
 if args.sport == "NHLhockey":
     sport = "hockey"
     league = "nhl"
-    sport_color="#c5a7e7"
+    sport_color="rgb(189, 143, 255)"
     home_color = "#a7c7e7"
     away_color = "#e7a7e5"
 if args.sport == "MLBbaseball":
@@ -40,7 +40,7 @@ if args.sport == "MLBbaseball":
 if args.sport == "NBAbasketball":
     sport = "basketball"
     league = "nba"
-    sport_color = "#e7bba7"
+    sport_color = "rgb(255, 178, 143)"
     home_color = "#e7b0a7"
     away_color = "#e7a7da"
 
@@ -109,7 +109,7 @@ def buildGraphic(api_data):
         html_content += f"<h3 class='game-row' style='color: white;'><span id='hometeam' style='color:{home_color}'>{first_part.strip()}</span> @ <span id='awayteam' style='color:{away_color}'>{second_part.strip()}</span> | <span style='color:{winnercolor}'>{third_part.strip()}</span></h3>\n"
 
     html_content += "</div>"
-    html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.pages.dev/{sport}</h4>"
+    html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.vercel.app/{args.sport}</h4>"
 
     with open(f'{args.sport}_predictions.html', 'w') as file:
         file.write(html_content)
@@ -259,15 +259,15 @@ def create_post(sport):
    # with open(f'{sport}/post.json') as postfile:
    #     postinfo = json.load(postfile)
 
-    posttext = f"{league.upper()} predictions for {datetime.date.today().isoformat()} \n\n QuantusSports.pages.dev"
+    posttext = f"{league.upper()} predictions for {datetime.date.today().isoformat()} \n\n QuantusSports.vercel.app"
 
     facets = [
         {
             "index": {
-                "byteStart": posttext.find("QuantusSports.pages.dev"),
-                "byteEnd": posttext.find("QuantusSports.pages.dev") + len("QuantusSports.pages.dev")
+                "byteStart": posttext.find("QuantusSports.vercel.app"),
+                "byteEnd": posttext.find("QuantusSports.vercel.app") + len("QuantusSports.vercel.app")
             },
-            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.pages.dev/"}]
+            "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.vercel.app/"}]
         },
        # {
        #     "index": {

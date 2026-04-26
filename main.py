@@ -25,19 +25,24 @@ league = ''
 if args.sport == "NBAbasketball":
     sport = "basketball"
     league = "nba"
-    k_mult = 4
+    k_mult = 22
+    c_value = 940   
+    color= "rgb(255, 178, 143)"
     load_dotenv('NBAbasketball.env')
 elif args.sport == "NHLhockey":
     sport = "hockey"
     league = "nhl"
-    k_mult = 24
-
+    k_mult = 14
+    c_value = 950   
+    color = "rgb(189, 143, 255)"
     load_dotenv('NHLhockey.env')
 
 elif args.sport == "MLBbaseball":
     sport = "baseball"
     league = "mlb"
-    k_mult = 16
+    k_mult = 4
+    c_value = 525   
+    color = "#a7e7b1"
 
     load_dotenv('MLBbaseball.env')
 
@@ -103,20 +108,14 @@ def fetch_games():
                                            'winner': game['competitions'][0]['competitors'][0]['winner'],
                                            'score': game['competitions'][0]['competitors'][0]['score'],
                                            'logo': game['competitions'][0]['competitors'][0]['team']['logo'],
-
-
+                                           'abbreviation': game['competitions'][0]['competitors'][0]['team']['abbreviation'],
                                            'record': game['competitions'][0]['competitors'][0]['records'][0]['summary']}
             games[game_identifier]['team_2'] = {'team_name': game['competitions'][0]['competitors'][1]['team']['displayName'],
                                            'winner': game['competitions'][0]['competitors'][1]['winner'],
                                            'score': game['competitions'][0]['competitors'][1]['score'],
                                            'logo': game['competitions'][0]['competitors'][1]['team']['logo'],
-
-
-
-
+                                           'abbreviation': game['competitions'][0]['competitors'][1]['team']['abbreviation'],
                                            'record': game['competitions'][0]['competitors'][1]['records'][0]['summary']}
-
-
 
     with open(f'{args.sport}/games.json', 'w') as file:
         json.dump(games, file)
@@ -134,9 +133,9 @@ def calc_elo():
         team_1_elo_before = float(games[game]['team_1']['elo_before'])
         team_2_elo_before = float(games[game]['team_2']['elo_before'])
 
-        team_1_winprob = 1/(1+10 ** ((team_2_elo_before - team_1_elo_before )/400) )
+        team_1_winprob = 1/(1+10 ** ((team_2_elo_before - team_1_elo_before )/c_value) )
 
-        team_2_winprob = 1/(1+10 ** ((team_1_elo_before - team_2_elo_before )/400) )
+        team_2_winprob = 1/(1+10 ** ((team_1_elo_before - team_2_elo_before )/c_value) )
 
         # K = 16 * (1 + 0.1 * games[game]['points_diff'])
         K = k_mult * (games[game]['points_diff']**0.5)
@@ -187,6 +186,7 @@ def calc_elo():
         if 'socialpost' in games[game]:
             if games[game]['socialpost'] == False:
                 socialPost(game)
+                # socialPostHTML(game)
                 print('social')
 
 
@@ -217,7 +217,7 @@ def setup_teams():
     teams_list = {
 
         "NHLhockey":{
-                    "Boston Bruins": {"league": "Eastern", "division": "Atlantic"},
+        "Boston Bruins": {"league": "Eastern", "division": "Atlantic"},
         "Buffalo Sabres": {"league": "Eastern", "division": "Atlantic"},
         "Detroit Red Wings": {"league": "Eastern", "division": "Atlantic"},
         "Florida Panthers": {"league": "Eastern", "division": "Atlantic"},
@@ -346,7 +346,178 @@ def setup_teams():
 
 
 
+def socialPostHTML(id):
+    postInfo = {}
+    with open(f'{args.sport}/post.json') as postFile:
+        postInfo = json.load(postFile)
+
+    if games[id]['team_1']['winner'] == True:
+
+        postInfo['winning_team'] = games[id]['team_1']['team_name']
+        postInfo['losing_team'] = games[id]['team_2']['team_name']
+
+    elif games[id]['team_2']['winner'] == True:
+
+        postInfo['winning_team'] = games[id]['team_2']['team_name']
+        postInfo['losing_team'] = games[id]['team_1']['team_name']
+
+    score1 = games[id]['team_1']['score']
+    score2 = games[id]['team_2']['score']
+    if score1 >= score2:
+        postInfo['score'] = f"{score1}-{score2}"
+    else:
+        postInfo['score'] = f"{score2}-{score1}"
+    with open(f'{args.sport}/post.json', 'w') as postFile:
+        json.dump(postInfo, postFile)
+
+    with open(f'{args.sport}/order.json') as orderFile:
+        order = json.load(orderFile)
+
+    print('social Posting', id)
+    games[id]['socialpost'] = True
+
+    with open(f'{args.sport}/order.json') as orderFile:
+        order = json.load(orderFile)
+
+    with open(f'{args.sport}/games.json', 'w') as file:
+        json.dump(games, file)
+
+    with open(f'{args.sport}/teams.json', 'w') as file:
+        json.dump(teams, file)
+
+    team_1 = games[id]['team_1']
+    team_2 = games[id]['team_2']
+
+    red = '#cc4e4e'
+    green ='#4ECCA3'
+    text = '#EEEEEE'
+    delta_elo_color_team_1 = red if str(team_1['delta_elo']).startswith('-') else green
+    delta_elo_color_team_2 = red if str(team_2['delta_elo']).startswith('-') else green
+
+
+    team_1_abb = games[id]['team_1']['abbreviation']
+    team_2_abb = games[id]['team_2']['abbreviation']
+
+
+    team_list = list(order["all"].keys())
+
+    team_1_rank = team_list.index(team_1["team_name"]) + 1
+    team_2_rank = team_list.index(team_2['team_name']) + 1
+
+    for team_name, team_data in order.items():
+        if team_name == team_1['team_name']:
+            team_data['record'] = team_1['record']
+        if team_name == team_2['team_name']:
+            team_data['record'] = team_2['record']
+
+    #HTML
+    html_data = f'''
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tourney:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+            #container{{
+                display:flex;
+                justify-content: space-around;
+                align-items: center;
+                margin-top: 40px;
+            }}
+
+            #container > div > *{{
+                text-align: center;
+            }}
+
+            html{{
+                width:800px;
+                height:500px;
+                overflow:hidden;
+                margin:0;
+                padding:0;
+            }}
+
+            *{{
+                color:white;
+                font-family: 'Ubuntu';
+            }}
+
+        </style>
+        <html style="margin:0;padding:0;background-color: #232931;">
+
+            <h2 style="text-align:center;  font-family:'Inter', sans-serif; margin-top: 20px;">{games[id]['date']}</h2>
+            <h1 style="text-align: center;  font-family:'Inter'">{team_1['team_name']} vs {team_2['team_name']}</h1>
+            <div id="container">
+
+                <div>
+                    <h1 style="font-family: 'Tourney'; font-weight: 600; font-size:7rem; margin-bottom: 5px;">{team_1_abb}</h1>
+                    <h2 style="color:{delta_elo_color_team_1}">[#{team_1_rank}] {team_1['elo_after']} ({team_1['delta_elo']})</h2>
+                    <h2>{team_1['record']}</h2>
+                </div>
+                <div id="score">
+                    <h1 style="font-size:5rem;">{team_1['score']}-{team_2['score']}</h1>
+
+                </div>
+                <div>
+                    <h1 style=" font-weight: 600; font-family: 'Tourney';font-size:7rem; margin-bottom: 5px; color:white;">{team_2_abb}</h1>
+                    <h2 style="color:{delta_elo_color_team_2}">[#{team_2_rank}] {team_2['elo_after']} ({team_2['delta_elo']})</h2>
+                    <h2>{team_2['record']}</h2>
+                </div>
+            </div>
+
+            </div><h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; color:{color};  transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>Quantus{sport.capitalize()}.bsky.social</h4>
+        </html>    
+
+    '''
+    #Save to FILE
+    #RUn the chromium thing
+    with open(f'{args.sport}/gamepost.html', 'w') as file:
+        file.write(html_data)
+
+    abs_path = os.path.abspath(f"{args.sport}/gamepost.html")
+    file_url = f"file://{abs_path}"
+    print(file_url)
+    command = [
+            "chromium",
+            "--headless=new",
+            f"--screenshot={f'{args.sport}/post.png'}",
+            "--virtual-time-budget=5000",
+            '--force-device-scale-factor=2',
+            f'--run-all-compositor-stages-before-draw ',
+            "--window-size=800,600",
+            "--hide-scrollbars",
+            file_url
+        ]
+    subprocess.run(command, check=True)
+
+
+
+    with open(f'{args.sport}/games.json', 'w') as file:
+        json.dump(games, file)
+
+    with open(f'{args.sport}/order.json', 'w') as orderFile:
+        json.dump(order, orderFile)
+
+
+    createBSPost.create_post(args.sport)
+
+
+
+
 def socialPost(id):
+    colours = {
+        "Red": "#FF6161",
+        "Navy Blue": "#8ea2fd",
+        "Orange": "#ffb28f",
+        "Light Blue": "#8EC7FD",
+        "Blue": "#8ea2fd",
+        "Black": "#C9C9C9",
+        "Purple": "#bd8fff",
+        "Green": "#a7e7b1",
+        "Yellow": "#FFF88F",
+
+    }
+
+    with open("colours.json") as f:
+        assignedColours=json.load(f)
 
     postInfo = {}
     with open(f'{args.sport}/post.json') as postFile:
@@ -388,6 +559,9 @@ def socialPost(id):
     with open(f'{args.sport}/teams.json', 'w') as file:
         json.dump(teams, file)
 
+    team_1_abb = games[id]['team_1']['abbreviation']
+    team_2_abb = games[id]['team_2']['abbreviation']
+
     red = '#cc4e4e'
     green ='#4ECCA3'
     text = '#EEEEEE'
@@ -397,8 +571,10 @@ def socialPost(id):
 
     font_path = 'assets/Ubuntu-Bold.ttf'
     font_prop = font_manager.FontProperties(fname=font_path)
-    os.system(f"wget -O {args.sport}/team_1.png {team_1['logo']}")
-    os.system(f"wget -O {args.sport}/team_2.png {team_2['logo']}")
+
+    tourney_font = font_manager.FontProperties(fname="assets/Tourney-SemiBold.ttf")
+    # os.system(f"wget -O {args.sport}/team_1.png {team_1['logo']}")
+    # os.system(f"wget -O {args.sport}/team_2.png {team_2['logo']}")
 
 
     # os.system(f"inkscape assets/{team_1['team_name']}.svg --export-type=png --export-filename=team_1.png --export-dpi=600")
@@ -415,11 +591,11 @@ def socialPost(id):
 
 
 
-    team_1_logo = Image.open(f'{args.sport}/team_1.png').convert("RGBA").resize((200, 200), Image.LANCZOS)
-    team_2_logo = Image.open(f'{args.sport}/team_2.png').convert("RGBA").resize((200, 200), Image.LANCZOS)
+    # team_1_logo = Image.open(f'{args.sport}/team_1.png').convert("RGBA").resize((200, 200), Image.LANCZOS)
+    # team_2_logo = Image.open(f'{args.sport}/team_2.png').convert("RGBA").resize((200, 200), Image.LANCZOS)
 
-    team_1_logo = numpy.array(team_1_logo)  # Convert to NumPy array for Matplotlib
-    team_2_logo = numpy.array(team_2_logo)  # Convert to NumPy array for Matplotlib
+    # team_1_logo = numpy.array(team_1_logo)  # Convert to NumPy array for Matplotlib
+    # team_2_logo = numpy.array(team_2_logo)  # Convert to NumPy array for Matplotlib
 
 
     for team_name, team_data in order.items():
@@ -455,17 +631,19 @@ def socialPost(id):
 
     ax.text(1300, 400, f"[#{team_2_rank}] {team_2['elo_after']} ({team_2['delta_elo']})", fontsize=30, color=delta_elo_color_team_2, ha='center', va='center',fontproperties=font_prop)
     ax.text(1300, 300, f"{team_2['record']}", fontsize=30, color=text, ha='center', va='center',fontproperties=font_prop)
+    ax.text(300,600, team_1_abb, fontsize=100, color=colours[assignedColours[team_1['team_name']]], ha='center', va='center', fontproperties=tourney_font)
+    ax.text(1300,600, team_2_abb, fontsize=100, color=colours[assignedColours[team_2['team_name']]], ha='center', va='center', fontproperties=tourney_font)
 
 
-    ax.text(800, 0, f"QuantusSports.pages.dev", fontsize=20, color=text, ha='center', va='center',fontproperties=font_prop)
+    ax.text(800, 0, f"QuantusSports.vercel.app", fontsize=20, color=text, ha='center', va='center',fontproperties=font_prop)
 
 
     # Overlay team logos
-    ax.imshow(team_1_logo, extent=[200, 400, 500, 700])  # (x_min, x_max, y_min, y_max)
-    ax.imshow(team_2_logo, extent=[1200, 1400, 500, 700])
+    # ax.imshow(team_1_logo, extent=[200, 400, 500, 700])  # (x_min, x_max, y_min, y_max)
+    # ax.imshow(team_2_logo, extent=[1200, 1400, 500, 700])
 
     # Save and show the image
-    plt.savefig(f"{args.sport}/post.png", dpi=600, bbox_inches="tight")
+    plt.savefig(f"{args.sport}/post.png", dpi=60, bbox_inches="tight")
 
 
     with open(f'{args.sport}/games.json', 'w') as file:
@@ -600,8 +778,8 @@ def predictionAccuracy():
         team1Elo = float(game['team_1']['elo_before'])
         team2Elo = float(game['team_2']['elo_before'])
 
-        team1Prob = 1 / (1+10** ((team2Elo-team1Elo)/400) )
-        team2Prob = 1 / (1+10** ((team1Elo-team2Elo)/400) )
+        team1Prob = 1 / (1+10** ((team2Elo-team1Elo)/c_value) )
+        team2Prob = 1 / (1+10** ((team1Elo-team2Elo)/c_value) )
 
         if team1Prob > team2Prob and game['team_1']['winner'] == True:
             correct +=1

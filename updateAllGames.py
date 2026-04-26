@@ -2,10 +2,17 @@ import requests
 import json
 import time
 import argparse
-
+import os
 parser = argparse.ArgumentParser()
 parser.add_argument("--sport")
 args = parser.parse_args()
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+os.chdir(current_dir)
+
+
+
+
 
 
 config = {
@@ -58,9 +65,9 @@ while current_date <= end_date:
 
 #https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=20250318
 def fetch_games(date):
-
-    api_url = f'https://site.api.espn.com/apis/site/v2/sports/{config[args.sport]['sport']}/{config[args.sport]['league']}/scoreboard?dates={date}'
-
+   	
+    api_url = f"https://site.api.espn.com/apis/site/v2/sports/{config[args.sport]['sport']}/{config[args.sport]['league']}/scoreboard?dates={date}"
+    print(api_url)
 
     api_request = requests.get(api_url)
     api_request = api_request.json()
@@ -87,7 +94,7 @@ def fetch_games(date):
         except:
             print('no issue')
 
-        if game['season']['slug'] == 'regular-season' and game_identifier not in games and game['status']['type']['name'] == 'STATUS_FINAL' and 'records' in game['competitions'][0]['competitors'][0]:
+        if game['season']['slug'] == 'regular-season' and game['status']['type']['name'] == 'STATUS_FINAL' and 'records' in game['competitions'][0]['competitors'][0]:
 
             games[game_identifier] = {'socialpost': True, 'points_diff': abs(   float(game['competitions'][0]['competitors'][0]['score']) - float(game['competitions'][0]['competitors'][1]['score'])   ), 'date': game['date'].split("T")[0] }
 
@@ -95,6 +102,7 @@ def fetch_games(date):
                                            'winner': game['competitions'][0]['competitors'][0]['winner'],
                                            'score': game['competitions'][0]['competitors'][0]['score'],
                                            'logo': game['competitions'][0]['competitors'][0]['team']['logo'],
+                                           'abbreviation': game['competitions'][0]['competitors'][0]['team']['abbreviation'],
 
 
                                            'record': game['competitions'][0]['competitors'][0]['records'][0]['summary']}
@@ -102,6 +110,7 @@ def fetch_games(date):
                                            'winner': game['competitions'][0]['competitors'][1]['winner'],
                                            'score': game['competitions'][0]['competitors'][1]['score'],
                                            'logo': game['competitions'][0]['competitors'][1]['team']['logo'],
+                                           'abbreviation': game['competitions'][0]['competitors'][1]['team']['abbreviation'],
 
 
 
