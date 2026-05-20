@@ -58,7 +58,7 @@ now = datetime.now()
 hour = now.hour  # Get the current hour in 24-hour format
 
 
-api_url = f'https://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/scoreboard'
+api_url = f'https://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/scoreboard?limit=100'
 
 with open(f'{args.sport}/games.json') as file:
     games = json.load(file)

@@ -17,20 +17,20 @@ os.chdir(current_dir)
 
 config = {
     "MLBbaseball":{
-        "start": "2026-03-25",
+        "start": "2026-03-18",
         "games": 162,
         "sport": "baseball",
         "league": "mlb"
 
     },
     "NBAbasketball":{
-        "start": "2025-10-21",
+        "start": "2025-10-14",
         "games": 82,
         "league": "nba",
         "sport":"basketball"
     },
     "NHLhockey":{
-        "start": "2025-10-07",
+        "start": "2025-10-01",
         "games": 82,
         "league": "nhl",
         "sport": "hockey"
@@ -39,13 +39,12 @@ config = {
 }
 
 
-with open(f'{args.sport}/games.json') as file:
-    games = json.load(file)
+with open(f'{args.sport}/games.json', 'w') as file:
+    print('games cleared')
 
 with open(f'{args.sport}/teams.json') as file:
     teams = json.load(file)
-
-
+games = {}
 
 from datetime import date, timedelta
 
@@ -66,12 +65,12 @@ while current_date <= end_date:
 #https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=20250318
 def fetch_games(date):
    	
-    api_url = f"https://site.api.espn.com/apis/site/v2/sports/{config[args.sport]['sport']}/{config[args.sport]['league']}/scoreboard?dates={date}"
-    print(api_url)
+    api_url = f"https://site.api.espn.com/apis/site/v2/sports/{config[args.sport]['sport']}/{config[args.sport]['league']}/scoreboard?dates={date}&limit=100"
+    # print(api_url)
 
     api_request = requests.get(api_url)
     api_request = api_request.json()
-    print('called api')
+    # print('called api')
 
     game_list = api_request['events']
 
@@ -92,9 +91,9 @@ def fetch_games(date):
             teams[game['competitions'][0]['competitors'][0]['team']['displayName']]['record'] = game['competitions'][0]['competitors'][0]['records'][0]['summary']
             teams[game['competitions'][0]['competitors'][1]['team']['displayName']]['record'] = game['competitions'][0]['competitors'][1]['records'][0]['summary']
         except:
-            print('no issue')
+            print(f"{game['competitions'][0]['competitors'][0]['team']['displayName']} and {game['competitions'][0]['competitors'][1]['team']['displayName']}")
 
-        if game['season']['slug'] == 'regular-season' and game['status']['type']['name'] == 'STATUS_FINAL' and 'records' in game['competitions'][0]['competitors'][0]:
+        if game['season']['slug'] == 'regular-season' and game['status']['type']['completed'] == True and 'records' in game['competitions'][0]['competitors'][0]:
 
             games[game_identifier] = {'socialpost': True, 'points_diff': abs(   float(game['competitions'][0]['competitors'][0]['score']) - float(game['competitions'][0]['competitors'][1]['score'])   ), 'date': game['date'].split("T")[0] }
 
@@ -116,7 +115,8 @@ def fetch_games(date):
 
 
                                            'record': game['competitions'][0]['competitors'][1]['records'][0]['summary']}
-
+        else:
+            print(f'game rejected: {game_identifier}: {date}: {game['season']['slug']} ')
 
 
     with open(f'{args.sport}/games.json', 'w') as file:
