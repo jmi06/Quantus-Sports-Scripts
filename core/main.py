@@ -1,3 +1,6 @@
+"""
+This script calculates QuantusRating and fetches all information for the core sports (MLB, NHL, NBA)
+"""
 import requests
 import json
 import os
@@ -7,12 +10,12 @@ from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib import font_manager
-import numpy
 import time
 from datetime import datetime
-import createBSPost
+import core.bluesky as bluesky
 import argparse
 
+# Configure argument parsing
 parser = argparse.ArgumentParser()
 parser.add_argument("--sport")
 args = parser.parse_args()
@@ -20,7 +23,6 @@ print(args.sport)
 
 sport = ''
 league = ''
-
 
 if args.sport == "NBAbasketball":
     sport = "basketball"
@@ -36,27 +38,19 @@ elif args.sport == "NHLhockey":
     c_value = 950   
     color = "rgb(189, 143, 255)"
     load_dotenv('NHLhockey.env')
-
 elif args.sport == "MLBbaseball":
     sport = "baseball"
     league = "mlb"
     k_mult = 4
     c_value = 525   
     color = "#a7e7b1"
-
     load_dotenv('MLBbaseball.env')
 
-
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
 os.chdir(current_dir)
-
-
 
 now = datetime.now()
 hour = now.hour  # Get the current hour in 24-hour format
-
 
 api_url = f'https://site.api.espn.com/apis/site/v2/sports/{sport}/{league}/scoreboard?limit=100'
 
@@ -66,113 +60,92 @@ with open(f'{args.sport}/games.json') as file:
 with open(f'{args.sport}/teams.json') as file:
     teams = json.load(file)
 
-keepGoing = True
-
-
+# Get all the games for the day
 def fetch_games():
-
-
     try:
         api_request = requests.get(api_url)
         api_request = api_request.json()
-        print('called api')
-
+        print('Called api')
         game_list = api_request['events']
-    except:
-        print('error')
+    except Exception as e:
+        print('Error:', e)
         return
 
-
-    keepGoing = False
-    for i in game_list:
-        if i['status']['type']['name'] != 'STATUS_FINAL':
-            keepGoing = True
-
-
-
-
-
     for game in game_list:
-        # game_identifier = f"{game['id']} {game['date']} {game['competitions'][0]['attendance']} {game['competitions'][0]['competitors'][0]['records'][0]['summary']}"
         game_identifier = game['uid']
 
-        teams[game['competitions'][0]['competitors'][0]['team']['displayName']]['record'] = game['competitions'][0]['competitors'][0]['records'][0]['summary']
-        teams[game['competitions'][0]['competitors'][1]['team']['displayName']]['record'] = game['competitions'][0]['competitors'][1]['records'][0]['summary']
+        team1 = game['competitions'][0]['competitors'][0]
+        team2 = game['competitions'][0]['competitors'][1]
 
+        
+        teams[team1['team']['displayName']]['record'] = team1['records'][0]['summary']
+        teams[team2['team']['displayName']]['record'] = team2['records'][0]['summary']
 
         if game['season']['slug'] == 'regular-season' and game_identifier not in games and game['status']['type']['name'] == 'STATUS_FINAL':
-
-            games[game_identifier] = {'socialpost': False, 'points_diff': abs(   float(game['competitions'][0]['competitors'][0]['score']) - float(game['competitions'][0]['competitors'][1]['score'])   ), 'date': game['date'].split("T")[0] }
-
-            games[game_identifier]['team_1'] = {'team_name': game['competitions'][0]['competitors'][0]['team']['displayName'],
-                                           'winner': game['competitions'][0]['competitors'][0]['winner'],
-                                           'score': game['competitions'][0]['competitors'][0]['score'],
-                                           'logo': game['competitions'][0]['competitors'][0]['team']['logo'],
-                                           'abbreviation': game['competitions'][0]['competitors'][0]['team']['abbreviation'],
-                                           'record': game['competitions'][0]['competitors'][0]['records'][0]['summary']}
-            games[game_identifier]['team_2'] = {'team_name': game['competitions'][0]['competitors'][1]['team']['displayName'],
-                                           'winner': game['competitions'][0]['competitors'][1]['winner'],
-                                           'score': game['competitions'][0]['competitors'][1]['score'],
-                                           'logo': game['competitions'][0]['competitors'][1]['team']['logo'],
-                                           'abbreviation': game['competitions'][0]['competitors'][1]['team']['abbreviation'],
-                                           'record': game['competitions'][0]['competitors'][1]['records'][0]['summary']}
+            games[game_identifier] = {'socialpost': False, 
+                                      'points_diff': abs( float(team1['score']) - float(team2['score']) ), 
+                                      'date': game['date'].split("T")[0] }
+            
+            games[game_identifier]['team_1'] = {'team_name': team1['team']['displayName'],
+                                                'winner': team1['winner'],
+                                                'score': team1['score'],
+                                                'logo': team1['team']['logo'],
+                                                'abbreviation': team1['team']['abbreviation'],
+                                                'record': team1['records'][0]['summary']}
+            games[game_identifier]['team_2'] = {'team_name': team2['team']['displayName'],
+                                                'winner': team2['winner'],
+                                                'score': team2['score'],
+                                                'logo': team2['team']['logo'],
+                                                'abbreviation': team2['team']['abbreviation'],
+                                                'record': team2['records'][0]['summary']}
 
     with open(f'{args.sport}/games.json', 'w') as file:
         json.dump(games, file)
 
-
+# Calculate Ratings
 def calc_elo():
 
     for game in games:
-        games[game]['team_1']['elo_before'] = teams[games[game]['team_1']['team_name']]['elo']
-        games[game]['team_2']['elo_before'] = teams[games[game]['team_2']['team_name']]['elo']
+        team1 = games[game]['team_1']
+        team2 = games[game]['team_2']
 
-        #calc the real elo time!!!!!
-        #After you calc it make sure it goes into the teams dict as well!
+        team1['elo_before'] = teams[team1['team_name']]['elo']
+        team2['elo_before'] = teams[team2['team_name']]['elo']
 
-        team_1_elo_before = float(games[game]['team_1']['elo_before'])
-        team_2_elo_before = float(games[game]['team_2']['elo_before'])
+        team_1_elo_before = float(team1['elo_before'])
+        team_2_elo_before = float(team2['elo_before'])
 
         team_1_winprob = 1/(1+10 ** ((team_2_elo_before - team_1_elo_before )/c_value) )
-
         team_2_winprob = 1/(1+10 ** ((team_1_elo_before - team_2_elo_before )/c_value) )
 
-        # K = 16 * (1 + 0.1 * games[game]['points_diff'])
         K = k_mult * (games[game]['points_diff']**0.5)
 
-
-        if games[game]['team_1']['winner'] == True:
+        if team1['winner'] == True:
             team1W = 1
-        elif games[game]['team_1']['winner'] == False:
-            team1W = 0
-
-        if games[game]['team_2']['winner'] == True:
-            team2W = 1
-        elif games[game]['team_2']['winner'] == False:
             team2W = 0
+        elif team1['winner'] == False:
+            team1W = 0
+            team2W = 1
 
-        print(team_1_elo_before)
         team_1_newrating = team_1_elo_before + K * (team1W-team_1_winprob)
         team_2_newrating = team_2_elo_before + K * (team2W-team_2_winprob)
 
-        games[game]['team_1']['elo_after'] = round(team_1_newrating, 2)
-        games[game]['team_2']['elo_after'] = round(team_2_newrating, 2)
+        team1['elo_after'] = round(team_1_newrating, 2)
+        team2['elo_after'] = round(team_2_newrating, 2)
 
-        games[game]['team_1']['delta_elo'] = round( float(games[game]['team_1']['elo_after']) - float(games[game]['team_1']['elo_before'] )   ,2)
-        games[game]['team_2']['delta_elo'] =round( float(games[game]['team_2']['elo_after']) - float(games[game]['team_2']['elo_before']    ),2)
+        team1['delta_elo'] = round( float(team1['elo_after']) - float(team1['elo_before'] )   ,2)
+        team2['delta_elo'] =round( float(team2['elo_after']) - float(team2['elo_before']    ),2)
 
-        if str(games[game]['team_1']['delta_elo']).startswith('+')  == False and games[game]['team_1']['delta_elo'] > 0:
-            games[game]['team_1']['delta_elo'] = f"+{games[game]['team_1']['delta_elo']}"
-        if str(games[game]['team_2']['delta_elo']).startswith('+')  == False and games[game]['team_2']['delta_elo'] > 0:
-            games[game]['team_2']['delta_elo'] = f"+{games[game]['team_2']['delta_elo']}"
-
-
-        teams[games[game]['team_1']['team_name']]['elo'] = round(team_1_newrating, 2)
-        teams[games[game]['team_2']['team_name']]['elo'] = round(team_2_newrating, 2)
-        teams[games[game]['team_1']['team_name']]['games'].append(game)
-        teams[games[game]['team_2']['team_name']]['games'].append(game)
+        if str(team1['delta_elo']).startswith('+')  == False and team1['delta_elo'] > 0:
+            team1['delta_elo'] = f"+{team1['delta_elo']}"
+        if str(team2['delta_elo']).startswith('+')  == False and team2['delta_elo'] > 0:
+            team2['delta_elo'] = f"+{team2['delta_elo']}"
 
 
+        teams[team1['team_name']]['elo'] = round(team_1_newrating, 2)
+        teams[team2['team_name']]['elo'] = round(team_2_newrating, 2)
+        teams[team1['team_name']]['games'].append(game)
+        teams[team2['team_name']]['games'].append(game)
 
         with open(f'{args.sport}/games.json', 'w') as file:
             json.dump(games, file)
@@ -190,18 +163,11 @@ def calc_elo():
                 print('social')
 
 
-
     with open(f'{args.sport}/games.json', 'w') as file:
         json.dump(games, file)
 
     with open(f'{args.sport}/teams.json', 'w') as file:
         json.dump(teams, file)
-
-
-
-
-
-
 
 
 def setup_teams():
@@ -296,7 +262,7 @@ def setup_teams():
         },
 
         "MLBbaseball":{
-                    "Arizona Diamondbacks": {"league": "NL", "division": "NL West"},
+        "Arizona Diamondbacks": {"league": "NL", "division": "NL West"},
         "Atlanta Braves": {"league": "NL", "division": "NL East"},
         "Baltimore Orioles": {"league": "AL", "division": "AL East"},
         "Boston Red Sox": {"league": "AL", "division": "AL East"},
@@ -327,15 +293,7 @@ def setup_teams():
         "Toronto Blue Jays": {"league": "AL", "division": "AL East"},
         "Washington Nationals": {"league": "NL", "division": "NL East"},
         }
-
-
-
-
-
     }
-
-
-
 
     for team in teams_data['sports'][0]['leagues'][0]['teams']:
         teams[team['team']['displayName']] = {'elo': 1000, 'games': [], "league": teams_list[args.sport][team['team']['displayName']]['league'], "division": teams_list[args.sport][team['team']['displayName']]['division'], "record": ''}
@@ -343,7 +301,6 @@ def setup_teams():
 
     with open(f'{args.sport}/teams.json', 'w') as file:
         json.dump(teams, file)
-
 
 
 def socialPostHTML(id):
@@ -467,8 +424,7 @@ def socialPostHTML(id):
         </html>    
 
     '''
-    #Save to FILE
-    #RUn the chromium thing
+    #Run the chromium screenshot command, and save to file
     with open(f'{args.sport}/gamepost.html', 'w') as file:
         file.write(html_data)
 
@@ -488,19 +444,13 @@ def socialPostHTML(id):
         ]
     subprocess.run(command, check=True)
 
-
-
     with open(f'{args.sport}/games.json', 'w') as file:
         json.dump(games, file)
 
     with open(f'{args.sport}/order.json', 'w') as orderFile:
         json.dump(order, orderFile)
 
-
-    createBSPost.create_post(args.sport)
-
-
-
+    bluesky.create_post(args.sport)
 
 def socialPost(id):
     colours = {
@@ -573,30 +523,10 @@ def socialPost(id):
     font_prop = font_manager.FontProperties(fname=font_path)
 
     tourney_font = font_manager.FontProperties(fname="assets/Tourney-SemiBold.ttf")
-    # os.system(f"wget -O {args.sport}/team_1.png {team_1['logo']}")
-    # os.system(f"wget -O {args.sport}/team_2.png {team_2['logo']}")
-
-
-    # os.system(f"inkscape assets/{team_1['team_name']}.svg --export-type=png --export-filename=team_1.png --export-dpi=600")
-    # os.system(f"inkscape assets/{team_2['team_name']}.svg --export-type=png --export-filename=team_2.png --export-dpi=600")
-
-
-
     team_list = list(order["all"].keys())
 
     team_1_rank = team_list.index(team_1["team_name"]) + 1
     team_2_rank = team_list.index(team_2['team_name']) + 1
-
-
-
-
-
-    # team_1_logo = Image.open(f'{args.sport}/team_1.png').convert("RGBA").resize((200, 200), Image.LANCZOS)
-    # team_2_logo = Image.open(f'{args.sport}/team_2.png').convert("RGBA").resize((200, 200), Image.LANCZOS)
-
-    # team_1_logo = numpy.array(team_1_logo)  # Convert to NumPy array for Matplotlib
-    # team_2_logo = numpy.array(team_2_logo)  # Convert to NumPy array for Matplotlib
-
 
     for team_name, team_data in order.items():
         if team_name == team_1['team_name']:
@@ -634,17 +564,10 @@ def socialPost(id):
     ax.text(300,600, team_1_abb, fontsize=100, color=colours[assignedColours[team_1['team_name']]], ha='center', va='center', fontproperties=tourney_font)
     ax.text(1300,600, team_2_abb, fontsize=100, color=colours[assignedColours[team_2['team_name']]], ha='center', va='center', fontproperties=tourney_font)
 
-
     ax.text(800, 0, f"QuantusSports.vercel.app", fontsize=20, color=text, ha='center', va='center',fontproperties=font_prop)
-
-
-    # Overlay team logos
-    # ax.imshow(team_1_logo, extent=[200, 400, 500, 700])  # (x_min, x_max, y_min, y_max)
-    # ax.imshow(team_2_logo, extent=[1200, 1400, 500, 700])
 
     # Save and show the image
     plt.savefig(f"{args.sport}/post.png", dpi=60, bbox_inches="tight")
-
 
     with open(f'{args.sport}/games.json', 'w') as file:
         json.dump(games, file)
@@ -653,22 +576,20 @@ def socialPost(id):
         json.dump(order, orderFile)
 
 
-    createBSPost.create_post(args.sport)
+    bluesky.create_post(args.sport)
 
 
 
 
-
+# Ouputs a json file with a dictionary of teams in order by rating.
 def calc_order():
     order = {}
 
     with open(f'{args.sport}/teams.json') as teamFile:
         teams = json.load(teamFile)
 
-
     with open(f'{args.sport}/games.json') as file:
         games = json.load(file)
-
 
     for team_name, team_data in teams.items():
         if team_data['games']:
@@ -686,8 +607,6 @@ def calc_order():
     with open(f'{args.sport}/teams.json', 'w') as file:
         json.dump(teams, file)
 
-
-
     if args.sport == "NHLhockey":
 
         eastern_teams = {k: v for k, v in teams.items() if v["league"] == "Eastern"}
@@ -696,23 +615,18 @@ def calc_order():
         easternAtlantic = {k: v for k, v in teams.items() if v["league"] == "Eastern" and v["division"] == "Atlantic"}
         easternMetro = {k: v for k, v in teams.items() if v["league"] == "Eastern" and v["division"] == "Metropolitan"}
 
-
         westernCentral = {k: v for k, v in teams.items() if v["league"] == "Western" and v["division"] == "Central"}
         westernPacific = {k: v for k, v in teams.items() if v["league"] == "Western" and v["division"] == "Pacific"}
 
-
         order['all'] = dict(sorted(teams.items(), key=lambda x: x[1]['elo'], reverse=True))
-
         order['Eastern'] = dict(sorted(eastern_teams.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['Western'] = dict(sorted(western_teams.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['Western Central'] = dict(sorted(westernCentral.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['Western Pacific'] = dict(sorted(westernPacific.items(), key=lambda x: x[1]['elo'], reverse=True))
-
         order['Eastern Atlantic'] = dict(sorted(easternAtlantic.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['Eastern Metropolitan'] = dict(sorted(easternMetro.items(), key=lambda x: x[1]['elo'], reverse=True))
 
     elif args.sport == "MLBbaseball":
-
         al_teams = {k: v for k, v in teams.items() if v["league"] == "AL"}
         nl_teams = {k: v for k, v in teams.items() if v["league"] == "NL"}
 
@@ -724,7 +638,6 @@ def calc_order():
         nlWest = {k: v for k, v in teams.items() if v["division"] == "NL West"}
         nlCentral = {k: v for k, v in teams.items() if v["division"] == "NL Central"}
 
-
         order['all'] = dict(sorted(teams.items(), key=lambda x: x[1]['elo'], reverse=True))
 
         order['AL'] = dict(sorted(al_teams.items(), key=lambda x: x[1]['elo'], reverse=True))
@@ -732,7 +645,6 @@ def calc_order():
         order['NL East'] = dict(sorted(nlEast.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['NL West'] = dict(sorted(nlWest.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['NL Central'] = dict(sorted(nlCentral.items(), key=lambda x: x[1]['elo'], reverse=True))
-
         order['ALEast'] = dict(sorted(alEast.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['ALWest'] = dict(sorted(alWest.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['ALCentral'] = dict(sorted(alCentral.items(), key=lambda x: x[1]['elo'], reverse=True))
@@ -746,23 +658,10 @@ def calc_order():
         order['Eastern'] = dict(sorted(eastern_teams.items(), key=lambda x: x[1]['elo'], reverse=True))
         order['Western'] = dict(sorted(western_teams.items(), key=lambda x: x[1]['elo'], reverse=True))
 
-
-
-
     order['predictionAccuracy'] = predictionAccuracy()
-
-
 
     with open(f'{args.sport}/order.json', 'w') as orderFile:
         json.dump(order, orderFile)
-
-
-
-
-
-
-
-
 
 def predictionAccuracy():
 
@@ -797,16 +696,6 @@ def predictionAccuracy():
     return toDump
 
 
-
-def check_time():
-        if 4<= hour < 13:
-                keepGoing = False
-                print('end operation')
-        else:
-                keepGoing = True
-        print('Current Hour', hour)
-
-
 def add_to_db_rankings():
 
     with open(f'{args.sport}/order.json') as file:
@@ -817,15 +706,11 @@ def add_to_db_rankings():
 
     currentOrder['games'] = gamesFile
 
-
     RANKINGS_API_TOKEN = os.getenv('RANKINGS_API_TOKEN')
 
     RANKINGS_ACCOUNT_ID = os.getenv('RANKINGS_ACCOUNT_ID')
     RANKINGS_NAMESPACE_ID = os.getenv('RANKINGS_NAMESPACE_ID')
     RANKINGS_KV_KEY = os.getenv('RANKINGS_KV_KEY')
-
-
-
 
     BASE_URL = f"https://api.cloudflare.com/client/v4/accounts/{RANKINGS_ACCOUNT_ID}/storage/kv/namespaces/{RANKINGS_NAMESPACE_ID}/values/{RANKINGS_KV_KEY}"
 
@@ -835,13 +720,11 @@ def add_to_db_rankings():
     }
 
     try:
-        # response = requests.get(BASE_URL, headers=HEADERS)
         response = requests.put(
             BASE_URL,
             headers=HEADERS,
             data=json.dumps(currentOrder)
         )
-
 
         if response.status_code == 200:
             print('Rankings updated successfully')
@@ -852,34 +735,18 @@ def add_to_db_rankings():
         print('error')
         return
 
-
 def keepContinuing():
-
-
-
     setup_teams()
     fetch_games()
     calc_elo()
-    # add_to_db_teams()
-    # add_to_db_games()
     add_to_db_rankings()
-    check_time()
-
-
-    if hour >= 4 and  hour <= 13:
-        keepGoing = False
-
 
     for i in range(36):
         print('still alive',i)
         time.sleep(30)
 
-
-
 while datetime.now().hour >= 13 or datetime.now().hour < 4:
         keepContinuing()
 
-
-
 if 4 <= datetime.now().hour < 13:
-        print('great work soldier, try again tmrw')
+        print('Continue tomorrow')

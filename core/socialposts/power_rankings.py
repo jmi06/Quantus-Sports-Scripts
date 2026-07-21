@@ -18,8 +18,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 os.chdir(current_dir)
 
-
-
 team_colours = {
   "nba": {
     "Atlanta Hawks": { "colour": "#FF6161" },

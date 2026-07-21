@@ -3,10 +3,12 @@
 # Season low elo (team and league) - only after 2 weeks
 # Upset alert - only after 2 weeks
 # Biggest swing
-
+"""
+Not yet in use.
+"""
 import argparse
 import pandas as pd
-import csvGenerators
+import core.csvgen as csvgen
 import datetime
 import json
 
@@ -20,7 +22,7 @@ with open(f'{args.sport}/order.json', 'r') as file:
 
 
 def new_leader():
-    csvGenerators.byDate(args.sport)
+    csvgen.byDate(args.sport)
 
 
     df = pd.read_csv(f"{args.sport}/eloDate.csv")
@@ -39,8 +41,6 @@ def new_leader():
 
     print(type(today_df.iloc[0,0]))
 
-    if today_df.iloc[0,0] != yesterday_df.iloc[0,0]:
-        if orderFile['games'][orderFile[today_df.iloc[0,0]]['games'][-1]]] 
 
 
 

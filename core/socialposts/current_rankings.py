@@ -159,12 +159,10 @@ def get_human_date():
 
     return dt.strftime(f"%B {day}{suffix}")
 
+# Build the graphic with HTML and CSS
 def buildGraphic(api_data, previous_teams):
     today = get_human_date()
     teams = list(api_data['all'].keys())
-
-
-
 
     html_content =f'''
         <style>
@@ -215,9 +213,6 @@ def buildGraphic(api_data, previous_teams):
 
         '''
 
-
-
-
     html_content += "</div>"
     html_content+=  f"<h4 style='text-align:center; width: 100%; margin-top: 56%; left: 50%; transform: translateX(-50%); position:fixed; bottom:0; font-weight: 400; font-size: 3vh; color:white; margin: 5px;'>QuantusSports.vercel.app/{args.sport}</h4>"
 
@@ -227,6 +222,8 @@ def buildGraphic(api_data, previous_teams):
     abs_path = os.path.abspath(f"{args.sport}_rankings.html")
     file_url = f"file://{abs_path}"
     print(file_url)
+
+    # Save the graphic as a screenshot
     command = [
             "chromium",
             "--headless=new",
@@ -246,9 +243,6 @@ with open(f"../{args.sport}/order.json", "r") as file:
     info = json.load(file)
 
 buildGraphic(info, sport)
-
-
-
 
 
 def create_post(sport):
@@ -317,9 +311,6 @@ def create_post(sport):
 
     blob = resp.json()["blob"]
 
-    postinfo = {}
-#    with open(f'..{args.sport}/post.json') as postfile:
- #       postinfo = json.load(postfile)
 
     posttext = f"{league.upper()} Rankings powered by Quantus{sport.capitalize()}\n\nQuantusSports.vercel.app/{args.sport}/ratings"
 
@@ -331,13 +322,6 @@ def create_post(sport):
             },
             "features": [{"$type": "app.bsky.richtext.facet#link", "uri": "https://QuantusSports.vercel.app/{args.sport}/ratings"}]
         },
- #       {
-#            "index": {
-  #              "byteStart": posttext.find(config[args.sport]['tag']),
-   #             "byteEnd": posttext.find(config[args.sport]['tag']) + len(config[args.sport]['tag'])
-   #         },
-   #         "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": config[args.sport]['tag'][1:]}]
-   #     }
     ]
 
     post = {
@@ -346,11 +330,6 @@ def create_post(sport):
         "createdAt": now,
         'facets': facets
     }
-
-
-
-
-
 
     post["embed"] = {
         "$type": "app.bsky.embed.images",
