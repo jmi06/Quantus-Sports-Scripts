@@ -10,11 +10,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 os.chdir(current_dir)
 
-
-
-
-
-
 config = {
     "MLBbaseball":{
         "start": "2026-03-18",
@@ -35,9 +30,7 @@ config = {
         "league": "nhl",
         "sport": "hockey"
     }
-
 }
-
 
 with open(f'{args.sport}/games.json', 'w') as file:
     print('games cleared')
@@ -62,15 +55,12 @@ while current_date <= end_date:
 
 
 
-#https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=20250318
 def fetch_games(date):
    	
     api_url = f"https://site.api.espn.com/apis/site/v2/sports/{config[args.sport]['sport']}/{config[args.sport]['league']}/scoreboard?dates={date}&limit=100"
-    # print(api_url)
 
     api_request = requests.get(api_url)
     api_request = api_request.json()
-    # print('called api')
 
     game_list = api_request['events']
 
@@ -79,12 +69,7 @@ def fetch_games(date):
         if i['status']['type']['name'] != 'STATUS_FINAL':
             keepGoing = True
 
-
-
-
-
     for game in game_list:
-        # game_identifier = f"{game['id']} {game['date']} {game['competitions'][0]['attendance']} {game['competitions'][0]['competitors'][0]['records'][0]['summary']}"
         game_identifier = game['uid']
 
         try:
@@ -121,8 +106,6 @@ def fetch_games(date):
 
     with open(f'{args.sport}/games.json', 'w') as file:
         json.dump(games, file)
-
-
 
 for i in dates:
     print(i)
